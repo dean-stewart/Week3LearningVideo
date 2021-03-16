@@ -57,6 +57,53 @@ gap_long2 <- gapminder_wide_csv %>%
 
 
 ```{r}
+library(janitor)
+library(psych)
+library(dplyr)
+library(gapminder)
+data(gapminder)
+
+#summarising the data
+
+str(gapminder)  #str stands for structure
+#tells dimensions, variable names, the data type of each variable, and sample values for each variable.
+
+class(gapminder)
+gapminder_adjnames <- gapminder
+names(gapminder_adjnames) <- c("country","continent","year", "Life Exp", "population", "Gdp per Cap") #just change to 'not clean' header names
+make.names(names(gapminder_adjnames)) #replaces spaces in names with full stop
+clean_names(gapminder_adjnames)  # a better way - it replaces spaces with "_"
+
+gapminder_clean2 <- rename(gapminder_adjnames, life_exp = "Life Exp")  #I only renamed one column to keep up with the video!
+head(gapminder_clean2)
+
 
 ```
+Table function
+```{r}
+table(gapminder$continent) #number of each continent
+prop.table(table(gapminder$continent))  #tells the proportion of the total in each continent...ie count, but then divided by total
+
+summary(gapminder) #returns counts for categorical, or boxplot stats if it's numeric
+```
+
+describe
+```{r}
+describe(gapminder) #psych package.  Also gives skewness and kurtosis.  Handy if we're using models that are normally distributed, for example.  if normal, you can just use linear regression, for example
+```
+
+Correlation
+```{r}
+cor(gapminder[,3:6])  #these are the numeric columns
+cor(gapminder[,3:6], use="pairwise.complete.obs") #ignores na's
+
+#default is pearson's correlation.  can also compute spearmans or kendles
+
+
+```
+
+counting rows and columns
+use nrow() - helpful when splitting into training and testing dataset
+and ncolumn()
+
 
