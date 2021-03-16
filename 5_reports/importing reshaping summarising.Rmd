@@ -11,6 +11,7 @@ library(gapminder)
 library(tidyverse)
 library(readr)
 library(tidyr)
+library(dplyr)
 
 data(gapminder)
 gapminder_csv <- read_csv("../1_data/gapminder.csv")
@@ -37,5 +38,25 @@ gap_long <- gapminder_wide_csv %>%
 # the first column is called 'key'.  the 'values' are called value.  Continent and country are ignored
 # for more, see the video - this is explained
 #spread variable_name, value - makes the variable names into columns, and then assigns the values to them.
+```
+
+Example using unite function
+```{r}
+gap_long2 <- gapminder_wide_csv %>%
+  gather(key2, value, -continent, -country) %>%
+  unite(key2, c(key2,country), sep="_") %>%
+  separate(key2, c("variable_name","year", "country"), "_") %>%
+  spread(variable_name, value) %>%
+  mutate(year=as.numeric(year))
+#this is a bit stupid - you unite the country into the key, and then separate it back out.  Just for demo of the unite function
+```
+
+
+
+## Assessing the data quality
+
+
+```{r}
+
 ```
 
