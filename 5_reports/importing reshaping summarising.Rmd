@@ -1,0 +1,41 @@
+---
+title: "Learning Video 1"
+author: "Dean Stewart"
+date: "16/03/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(gapminder)
+library(tidyverse)
+library(readr)
+library(tidyr)
+
+data(gapminder)
+gapminder_csv <- read_csv("../1_data/gapminder.csv")
+gapminder_wide_csv <- read_csv("../1_data/gapminder_wide.csv")
+
+
+```
+
+## Making data tidy
+
+unique variables for each column.
+gapminder_wide is not like that...it has gdp_per_cap_1952, gdp_per_cap_1953...etc...
+
+This is similar to what you often see on a website - with the data dates across the page.  eg. world bank or covid data for countries
+
+Need to reshape...
+```{r}
+gap_long <- gapminder_wide_csv %>%
+  gather(key, value, -continent, -country) %>%
+  separate(key, c("variable_name","year"), "_") %>%
+  spread(variable_name, value) %>%
+  mutate(year=as.numeric(year))
+  
+# the first column is called 'key'.  the 'values' are called value.  Continent and country are ignored
+# for more, see the video - this is explained
+#spread variable_name, value - makes the variable names into columns, and then assigns the values to them.
+```
+
