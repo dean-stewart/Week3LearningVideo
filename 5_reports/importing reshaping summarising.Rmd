@@ -106,4 +106,9 @@ counting rows and columns
 use nrow() - helpful when splitting into training and testing dataset
 and ncolumn()
 
+```{r}
+#view(gapminder) #from tibble
+glimpse(gapminder) #a more neatly formated version of str
+```
+
 
