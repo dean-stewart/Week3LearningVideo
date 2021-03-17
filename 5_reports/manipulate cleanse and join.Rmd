@@ -180,6 +180,37 @@ dim(gapminderfull)
 gapmindersemi <- semi_join(gapminder_withkey, gapminder_allwithkey, by = "key")
 dim(gapmindersemi)
 
+#anti join (what's not in semi_join)
+gapminderanti <- anti_join(gapminder_withkey, gapminder_allwithkey, by = "key")
+dim(gapminderanti)
+view(gapminderanti)
+```
+
+
+intersect and union
+```{r}
+gapminder3col <- tibble(country = gapminder$country, year = gapminder$year, lifeExp = gapminder$lifeExp)
+gapminder_all3col <- tibble(country = gapminder_all$country, year = gapminder_all$year, lifeExp = gapminder_all$life_expectancy)
+intersect(gapminder3col,gapminder_all3col)
+#this produces whatever is EXACTLY THE SAME from the two
+
+union(gapminder3col, gapminder_all3col)
+#doesn't repeat
+
+setdiff(gapminder3col, gapminder_all3col)
+setdiff(gapminder_all3col, gapminder3col)
+#this shows whats in the first set and not the secton
+
+setequal(gapminder3col, gapminder_all3col) #says false - ie. they're not equal
+
+
+```
+
+## binding
+```{r}
+bind_rows(gapminder, gapminder_all)  #just addes the observations.  they have different numbers of columns...so end up with lots of na's
+
+bind_cols(gapminder, gapminder_all[1:1704,])
 
 ```
 
