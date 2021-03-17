@@ -142,5 +142,44 @@ unique(gapminder_dup)
 distinct(gapminder_dup) #does the same thing...
 ```
 
+## Joins
 
+```{r}
+library(dplyr)
+library(readr)
+library(gapminder)
+library(tibble)
+data(gapminder)
+gapminder_all <- read_csv("../1_data/gapminderall.csv")
+```
+
+joins
+```{r}
+gapminder_withkey <- gapminder %>% mutate(key = paste0(country, "_", year))
+gapminder_allwithkey <- gapminder_all %>% mutate(key = paste0(country, "_", year))
+dim(gapminder_withkey)
+dim(gapminder_allwithkey)
+
+#left join
+gapminderleft <- left_join(gapminder_withkey, gapminder_allwithkey, by = "key")
+dim(gapminderleft)
+
+#right join
+gapminderright <- right_join(gapminder_withkey, gapminder_allwithkey, by = "key")
+dim(gapminderright) #the duplicated column names get .x or .y after them
+
+#inner join
+gapminderinner <- inner_join(gapminder_withkey, gapminder_allwithkey, by = "key")
+dim(gapminderinner)
+
+#full join (union)
+gapminderfull <- full_join(gapminder_withkey, gapminder_allwithkey, by = "key")
+dim(gapminderfull)
+
+#semi join (inner join, but only with the x columns)
+gapmindersemi <- semi_join(gapminder_withkey, gapminder_allwithkey, by = "key")
+dim(gapmindersemi)
+
+
+```
 
