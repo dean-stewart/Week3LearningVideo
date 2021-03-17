@@ -1,0 +1,146 @@
+---
+title: "manipulate cleanse and join"
+author: "Dean Stewart"
+date: "16/03/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Tibbles
+
+Keeps the features of dataframes that are good and drops those that are bad!?
+
+```{r}
+my_tib <- tibble(x=1:3, y=c("blue","pink","yellow"))
+my_tib
+my_df = data.frame(x=1:3, y=c("blue","pink","yellow"))
+my_df
+as_tib = tibble(my_df)
+as_tib
+
+```
+Unfortunately, this looks the same in a markdown!!
+```{r}
+data(starwars)
+starwars #already a tibble
+as.data.frame(starwars)
+```
+
+In a console, the tibble is much easier to work with.
+
+Subsetting
+```{r}
+my_df[,1:2]
+my_df[,1]   #no longer a data frame - now a vector
+my_tib[,1:2]
+my_tib[,1] #still a tibble
+```
+
+You can also progressively build in a tibble
+```{r}
+#anotherDF <- data.frame(nItems = c(12,45,107),
+#                        cost = c(0.5,12,1.8),
+#                        totalWorth = nItems * cost)  #produces an error because it can't find nItems
+
+anothertib <- tibble(nItems = c(12,45,107),
+                        cost = c(0.5,12,1.8),
+                        totalWorth = nItems * cost)
+anothertib
+#this works
+```
+
+## now functions to clean and manipulate
+```{r}
+gapminder_all <- read_csv("../1_data/gapminderall.csv")
+str(gapminder_all)
+```
+
+using keys to join
+```{r}
+gapminder_allwithkey <- gapminder_all %>% mutate(key = paste0(country, "_", year))
+#country and year combined is helpful for joining later.
+```
+
+arrange
+```{r}
+gapminder_all_gdpcap <- gapminder_all %>%
+  mutate(gdp_per_capita = gdp/population) %>%
+  select(gdp_per_capita)# this works because it's a tibble
+gapminder_all_gdpcap %>% arrange(gdp_per_capita) #like sort but does whole dataset
+#can also do arrange(desc())
+gapminder_all %>% arrange(fertility)
+```
+
+summarise
+```{r}
+gapminder_all %>% summarise(n_distinct(country))
+length(unique(gapminder_all$country))
+
+gapminder_all %>% filter(!is.na(population)) %>%
+  summarise(mean_pop = mean(population), sd_pop = sd(population))
+
+```
+Pull or .$placeholder
+```{r}
+mean_pop <- gapminder_all %>% filter(!is.na(population)) %>%
+  summarise(mean_pop = mean(population))
+class(mean_pop)
+
+#now, let's say we want to divide gdp in a country by the mean pop of all countries
+gapminder_all2 <- gapminder_all %>%
+  filter(!is.na(gdp))%>%
+  mutate(gdpovermeanpop = gdp/mean_pop) %>%
+  select(gdp,gdpovermeanpop)
+  gapminder_all2 #if this isn't in markdown it shows a single value of 512.  problem is the class of mean_pop - it's a tibble or dataframe
+  
+#to convert to a value, we use pull or .$
+  mean_pop <- gapminder_all %>%
+    filter(!is.na(population)) %>%
+    summarise(mean_pop = mean(population)) %>%
+    pull(mean_pop)  #or .$mean_pop
+    
+
+```
+
+```{r}
+gapminder_all3 <- gapminder_all %>%
+  filter(!is.na(gdp))%>%
+  mutate(gdpovermeanpop = gdp/mean_pop) %>%
+  select(gdp,gdpovermeanpop)
+gapminder_all3  #much better now because mean_pop is a variable
+
+
+```
+
+group_by
+```{r}
+gapminder_all %>% group_by(continent) %>% filter(!is.na(gdp)) %>% summarise(average = mean(gdp))
+#averages over the continent
+```
+
+distinct
+```{r}
+#more efficient than unique
+distinct(gapminder_all)  #it's all distinct anyway..
+distinct(gapminder_all, country, infant_mortality) #not unique
+
+duplicated(gapminder_allwithkey$country)
+table(gapminder_allwithkey$country[duplicated(gapminder_allwithkey$country)]) #each country duplicated 56 times...it occurs 57 times, duplicated 56 times.
+```
+
+duplicated for dataframe
+```{r}
+a<- gapminder_all[c(3,5),]
+gapminder_dup <- rbind(gapminder_all,a)
+gapminder_dup[duplicated(gapminder_dup),]  #watch that comma!  3rd and 5th obs is duplicated...of course
+
+unique(gapminder_dup)
+distinct(gapminder_dup) #does the same thing...
+```
+
+
+
